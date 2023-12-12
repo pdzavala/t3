@@ -34,20 +34,21 @@ app = FastAPI()
 
 # CORS
 origins = [
-    'http://localhost:3000'
+    '*'
 ]
 
 app.add_middleware(CORSMiddleware,
                    allow_origins=origins,
                    allow_credentials=True,
                    allow_methods=['*'],
-                   allow_headers=['*'])
+                   allow_headers=['*'],
+                   max_age=3600)
 
 @app.get("/")
 def root():
     return {"message": "Taller de Integración - Tarea 3"}
 
-@app.get("/loadflights", response_class=HTMLResponse)
+@app.get("/loadflights")
 async def loadflights():
     global df_mainView
     files = pop.descargar_blobs(bucket)
@@ -77,6 +78,24 @@ async def loadflights():
     df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
     print('Data loaded successfully!')
     
+    return df_mainView.to_json(orient='records')
+
+@app.get("/getflights")
+async def getflights():
+    global df_mainView
+    df_aircrafts = None
+    df_airports = None
+    df_tickets = None
+    df_passengers = None
+    df_flights = None
+    df_mainView = None
+
+
+    df_aircrafts, df_airports, df_tickets, df_passengers, df_flights = load_data(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights)
+    print('Data loaded successfully!')
+    df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
+    print('Data loaded successfully!')
+
     return df_mainView.to_json(orient='records')
 
 
