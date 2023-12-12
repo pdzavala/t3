@@ -34,7 +34,7 @@ app = FastAPI()
 
 # CORS
 origins = [
-    'http://localhost:3000'
+    '*'
 ]
 
 app.add_middleware(CORSMiddleware,
@@ -47,8 +47,9 @@ app.add_middleware(CORSMiddleware,
 def root():
     return {"message": "Taller de Integración - Tarea 3"}
 
-@app.get("/loadData", response_class=HTMLResponse)
-async def loadData():
+@app.get("/loadflights", response_class=HTMLResponse)
+async def loadflights():
+    global df_mainView
     files = pop.descargar_blobs(bucket)
     for file in files:
         aux = file.split('.')
@@ -75,6 +76,9 @@ async def loadData():
     print('Data loaded successfully!')
     df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
     print('Data loaded successfully!')
+    
+    return df_mainView.to_dict()
+
 
    
 
