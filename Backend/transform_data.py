@@ -59,7 +59,6 @@ def load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_fligh
     df_merged = pd.merge(df_merged, df_passengers, on='passengerID')
     df_merged = pd.merge(df_merged, df_aircrafts, on='aircraftID')
     # Unir con df_airports para origen y destino
-    # Asegúrate de renombrar las columnas para evitar conflictos
     df_merged = pd.merge(df_merged, df_airports.rename(columns={'name': 'name_origin', 'lat': 'lat_origin', 'lon': 'lon_origin'}), left_on='originIATA', right_on='airportIATA')
     df_merged = pd.merge(df_merged, df_airports.rename(columns={'name': 'name_destination', 'lat': 'lat_destination', 'lon': 'lon_destination'}), left_on='destinationIATA', right_on='airportIATA')
     # Calcular la edad promedio de pasajeros por vuelo
@@ -77,6 +76,46 @@ def load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_fligh
     df_mainView = df_mainView.sort_values(by=['year', 'month', 'flightNumber'])
 
     return df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView
+
+def load_passengers(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView):
+    df_passengers['birthDate'] = df_passengers['birthDate'].apply(
+        lambda x: parse_spanish_date(x).strftime('%d-%m-%Y')
+    )
+
+    fecha_actual = datetime.now()
+
+    df_passengers['age'] = df_passengers['birthDate'].apply(
+        lambda x: relativedelta.relativedelta(fecha_actual, parser.parse(x))
+    ).apply(lambda x: x.years)
+
+    # Unir DataFrames para obtener datos completos de vuelos
+    df_merged = pd.merge(df_tickets, df_flights, on='flightNumber')
+    df_merged = pd.merge(df_merged, df_passengers, on='passengerID')
+    df_merged = pd.merge(df_merged, df_aircrafts, on='aircraftID')
+    # Unir con df_airports para origen y destino
+    df_merged = pd.merge(df_merged, df_airports.rename(columns={'name': 'name_origin', 'lat': 'lat_origin', 'lon': 'lon_origin'}), left_on='originIATA', right_on='airportIATA')
+    df_merged = pd.merge(df_merged, df_airports.rename(columns={'name': 'name_destination', 'lat': 'lat_destination', 'lon': 'lon_destination'}), left_on='destinationIATA', right_on='airportIATA')
+    # Calcular la edad promedio de pasajeros por vuelo
+    edad_promedio = df_merged.groupby('flightNumber')['age'].mean().astype(int)
+    # Contar la cantidad de pasajeros por vuelo
+    cantidad_pasajeros = df_merged.groupby('flightNumber').size()
+    # Obtener la lista de pasajeros por vuelo
+    passengers = df_merged.groupby('flightNumber')['passengerID'].apply(list).to_dict()
+    
+    # Crear el DataFrame final con la información requerida
+    df_mainView = df_merged[['flightNumber', 'name_origin', 'name_destination', 'airline', 'year', 'month', 'lat_origin', 'lon_origin', 'lat_destination', 'lon_destination']]
+    df_mainView = df_mainView.drop_duplicates(subset=['flightNumber'])
+    df_mainView['edad_promedio'] = df_mainView['flightNumber'].map(edad_promedio)
+    df_mainView['cantidad_pasajeros'] = df_mainView['flightNumber'].map(cantidad_pasajeros)
+    df_mainView['distancia'] = df_mainView.apply(lambda row: haversine(row['lat_origin'], row['lon_origin'], row['lat_destination'], row['lon_destination']), axis=1)
+    df_mainView.drop(['lat_origin', 'lon_origin','lat_destination', 'lon_destination'], axis=1, inplace=True)
+    df_mainView['passengers'] = df_mainView['flightNumber'].map(passengers)
+    # Ordenar el DataFrame final
+    df_mainView = df_mainView.sort_values(by=['year', 'month', 'flightNumber'])
+
+    return df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView
+
+
 
 def flightView(df_flights, df_aircrafts, df_airports, flightNumber: str):
     df_flights_especifico = df_flights[df_flights['flightNumber'] == int(flightNumber)]

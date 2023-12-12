@@ -111,6 +111,31 @@ async def getflights():
     json_array = df_mainView.to_dict(orient='records')
 
     return JSONResponse(content=json_array)
+@app.get("/getflightspass", response_model=list)
+async def getflights():
+    global df_mainView
+    global df_aircrafts
+    global df_airports
+    global df_tickets
+    global df_passengers
+    global df_flights
+    
+    df_aircrafts = None
+    df_airports = None
+    df_tickets = None
+    df_passengers = None
+    df_flights = None
+    df_mainView = None
+
+
+    df_aircrafts, df_airports, df_tickets, df_passengers, df_flights = load_data(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights)
+    print('Data loaded successfully!')
+    df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_passengers(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
+    print('Data loaded successfully!')
+
+    json_array = df_mainView.to_dict(orient='records')
+
+    return JSONResponse(content=json_array)
 
 @app.get("/flights/{flightNumber}", response_model=list)
 async def flightView(flightNumber: str):
