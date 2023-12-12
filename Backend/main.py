@@ -77,7 +77,7 @@ async def loadflights():
     df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
     print('Data loaded successfully!')
     
-    return df_mainView.to_dict()
+    return df_mainView.to_json(orient='records')
 
 
    
