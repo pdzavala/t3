@@ -113,7 +113,7 @@ async def getflights():
     return JSONResponse(content=json_array)
 
 @app.get("/flights/{flightNumber}", response_model=list)
-async def flightView(flightNumber: str):
+async def flightView(flightNumber: int):
     df_flights_especifico = df_flights[df_flights['flightNumber'] == int(flightNumber)]
     df_flights_aircraft = pd.merge(df_flights_especifico, df_aircrafts, on='aircraftID')
 
