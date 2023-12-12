@@ -1,9 +1,9 @@
 import os
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.protobuf_helpers import get_messages
 from google.cloud import storage
 import pandas as pd
@@ -34,14 +34,21 @@ app = FastAPI()
 
 # CORS
 origins = [
-    "http://localhost:3000"
+    'http://localhost:3000'
 ]
 
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
-
+app.add_middleware(CORSMiddleware,
+                   allow_origins=origins,
+                   allow_credentials=True,
+                   allow_methods=['*'],
+                   allow_headers=['*'])
 
 @app.get("/")
 def root():
+    return {"message": "Taller de Integración - Tarea 3"}
+
+@app.get("/loadData", response_class=HTMLResponse)
+async def loadData():
     files = pop.descargar_blobs(bucket)
     for file in files:
         aux = file.split('.')
@@ -68,10 +75,6 @@ def root():
     print('Data loaded successfully!')
     df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
     print('Data loaded successfully!')
-
-    return {"message": "Taller de Integración - Tarea 3"}
-
-@app.get("/flights")
 
    
 
