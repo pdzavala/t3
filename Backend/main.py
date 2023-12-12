@@ -1,8 +1,8 @@
 import os
 
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, FileResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, Depends
+from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.protobuf_helpers import get_messages
 from google.cloud import storage
@@ -80,7 +80,7 @@ async def loadflights():
     
     return df_mainView.to_json(orient='records')
 
-@app.get("/getflights")
+@app.get("/getflights", response_model=list)
 async def getflights():
     global df_mainView
     df_aircrafts = None
@@ -96,8 +96,9 @@ async def getflights():
     df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView = load_mainView(df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView)
     print('Data loaded successfully!')
 
-    return df_mainView.to_json(orient='records')
+    json_array = df_mainView.to_dict(orient='records')
 
+    return JSONResponse(content=json_array)
 
    
 
