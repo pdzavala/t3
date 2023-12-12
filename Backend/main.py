@@ -113,7 +113,7 @@ async def getflights():
     return JSONResponse(content=json_array)
 
 @app.get("/flights/{flightNumber}", response_model=list)
-async def flightView(flightNumber: int):
+async def flightView(flightNumber: str):
     df_flights_especifico = df_flights[df_flights['flightNumber'] == int(flightNumber)]
     df_flights_aircraft = pd.merge(df_flights_especifico, df_aircrafts, on='aircraftID')
 
@@ -123,5 +123,14 @@ async def flightView(flightNumber: int):
     json_array = df_final.to_dict(orient='records')
     return JSONResponse(content=json_array)
 
+@app.get("/flightPassengers/{flightNumber}")
+async def flightViewPassengers(flightNumber: str):
+    df_flights_especifico = df_flights[df_flights['flightNumber'] == int(flightNumber)]
+    df_flights_tickets = pd.merge(df_flights_especifico, df_tickets, on='flightNumber')
+    df_final = pd.merge(df_flights_tickets, df_passengers, on='passengerID')
+
+    df_final = df_final[['avatar', 'firstName', 'lastName', 'age', 'gender', 'weight(kg)', 'height(cm)', 'seatNumber']]
     
+    json_array = df_final.to_dict(orient='records')
+    return JSONResponse(content=json_array)
 
