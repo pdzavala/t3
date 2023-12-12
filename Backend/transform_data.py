@@ -99,9 +99,9 @@ def load_passengers(df_aircrafts, df_airports, df_tickets, df_passengers, df_fli
     edad_promedio = df_merged.groupby('flightNumber')['age'].mean().astype(int)
     # Contar la cantidad de pasajeros por vuelo
     cantidad_pasajeros = df_merged.groupby('flightNumber').size()
-    # Obtener la lista de pasajeros por vuelo
-    passengers = df_merged.groupby('flightNumber')['passengerID'].apply(list).to_dict()
-    
+    # Obtener la lista de pasajeros por vuelo con información de clase
+    passengers_info = df_merged.groupby('flightNumber').apply(lambda group: group[['passengerID', 'class']].to_dict(orient='records')).to_dict()
+
     # Crear el DataFrame final con la información requerida
     df_mainView = df_merged[['flightNumber', 'name_origin', 'name_destination', 'airline', 'year', 'month', 'lat_origin', 'lon_origin', 'lat_destination', 'lon_destination']]
     df_mainView = df_mainView.drop_duplicates(subset=['flightNumber'])
@@ -109,11 +109,12 @@ def load_passengers(df_aircrafts, df_airports, df_tickets, df_passengers, df_fli
     df_mainView['cantidad_pasajeros'] = df_mainView['flightNumber'].map(cantidad_pasajeros)
     df_mainView['distancia'] = df_mainView.apply(lambda row: haversine(row['lat_origin'], row['lon_origin'], row['lat_destination'], row['lon_destination']), axis=1)
     df_mainView.drop(['lat_origin', 'lon_origin','lat_destination', 'lon_destination'], axis=1, inplace=True)
-    df_mainView['passengers'] = df_mainView['flightNumber'].map(passengers)
+    df_mainView['passenger_info'] = df_mainView['flightNumber'].map(passengers_info)
     # Ordenar el DataFrame final
     df_mainView = df_mainView.sort_values(by=['year', 'month', 'flightNumber'])
 
     return df_aircrafts, df_airports, df_tickets, df_passengers, df_flights, df_mainView
+
 
 
 
