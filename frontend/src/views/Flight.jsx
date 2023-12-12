@@ -80,13 +80,13 @@ const Flight = () => {
   ['avatar', 'firstName', 'lastName', 'age', 'gender', 'weight(kg)', 'height(cm)', 'seatNumber']
   const columns = [
     { field: 'avatar', headerName: 'avatar', width: 150 },
-    { field: 'firstName', headerName: 'Nombre', width: 250 },
+    { field: 'firstName', headerName: 'Nombre', width: 150 },
     { field: 'lastName', headerName: 'Apellido', width: 150 },
-    { field: 'age', headerName: 'Edad', width: 100 },
-    { field: 'gender', headerName: 'Género', width: 250 },
-    { field: 'weight(kg)', headerName: 'Peso(kg)', width: 250 },
-    { field: 'height(cm)', headerName: 'Estatura (cm)', width: 150 },
-    { field: 'seatNumber', headerName: 'Número de asiento', width: 150 },
+    { field: 'age', headerName: 'Edad', width: 150 },
+    { field: 'gender', headerName: 'Género', width: 150 },
+    { field: 'weight(kg)', headerName: 'Peso(kg)', width: 150},
+    { field: 'height(cm)', headerName: 'Estatura (cm)', width: 200 },
+    { field: 'seatNumber', headerName: 'Número de asiento', width: 200 },
     
 
   ];
