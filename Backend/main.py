@@ -134,3 +134,12 @@ async def flightViewPassengers(flightNumber: str):
     json_array = df_final.to_dict(orient='records')
     return JSONResponse(content=json_array)
 
+@app.get("/tickets")
+async def tickets():
+    json_array = df_tickets.to_dict(orient='records')
+    return JSONResponse(content=json_array)
+
+@app.get("/passengers")
+async def passengers():
+    json_array = df_passengers.to_dict(orient='records')
+    return JSONResponse(content=json_array)
