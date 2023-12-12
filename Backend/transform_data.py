@@ -100,7 +100,7 @@ def load_passengers(df_aircrafts, df_airports, df_tickets, df_passengers, df_fli
     # Contar la cantidad de pasajeros por vuelo
     cantidad_pasajeros = df_merged.groupby('flightNumber').size()
     # Obtener la lista de pasajeros por vuelo con información de clase
-    passengers_info = df_merged.groupby('flightNumber').apply(lambda group: group[['passengerID', 'class']].to_dict(orient='records')).to_dict()
+    passengers_info = df_merged.groupby('flightNumber').apply(lambda group: group[['passengerID', 'flightType']].to_dict(orient='records')).to_dict()
 
     # Crear el DataFrame final con la información requerida
     df_mainView = df_merged[['flightNumber', 'name_origin', 'name_destination', 'airline', 'year', 'month', 'lat_origin', 'lon_origin', 'lat_destination', 'lon_destination']]
