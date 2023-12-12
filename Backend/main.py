@@ -3,7 +3,6 @@ import os
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
 from google.api_core.protobuf_helpers import get_messages
 from google.cloud import storage
 import pandas as pd
@@ -32,12 +31,7 @@ bucket = Bucket(storage_client)
 ### INICIO DE LA API ###
 app = FastAPI()
 
-# CORS
-origins = [
-    'http://localhost:3000'
-]
 
-app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
 
 @app.get("/")
 def root():
